@@ -7,7 +7,7 @@ using Project.Entities;
 
 #nullable disable
 
-namespace Project.Migrations
+namespace LibrariesPr.Migrations
 {
     [DbContext(typeof(LibraryDbContext))]
     partial class LibraryDbContextModelSnapshot : ModelSnapshot

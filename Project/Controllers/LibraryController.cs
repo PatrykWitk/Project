@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using LibrariesPr.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Project.Entities;
 
@@ -8,16 +10,36 @@ namespace LibrariesPr.Controllers
     public class LibraryController : ControllerBase
     {
         private readonly LibraryDbContext _dbContext;
-        public LibraryController(LibraryDbContext dbContext) {
+        private readonly IMapper _mapper;
+        public LibraryController(LibraryDbContext dbContext, IMapper mapper) {
             _dbContext = dbContext;
+            _mapper = mapper;
         }
-        public ActionResult<IEnumerable<Library>> GetAll()
+
+        [HttpGet]
+        public ActionResult<IEnumerable<LibraryDto>> GetAll()
         {
             var libraries = _dbContext
                 .Libraries
+                .Include(r => r.Address) 
+                .Include(r => r.Books)
                 .ToList();
 
-            return Ok(libraries);
+            var librariesDtos = _mapper.Map<List<LibraryDto>>(libraries);
+
+            return Ok(librariesDtos);
+        }
+
+        [HttpGet("{id}")]
+        public ActionResult<LibraryDto> Get(int id)
+        {
+            var library = _dbContext
+                .Libraries
+                .FirstOrDefault(x => x.Id == id);
+
+            var libraryDto = _mapper.Map<LibraryDto>(library);
+
+            return Ok(libraryDto);
         }
     }
 }

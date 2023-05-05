@@ -8,10 +8,10 @@ using Project.Entities;
 
 #nullable disable
 
-namespace Project.Migrations
+namespace LibrariesPr.Migrations
 {
     [DbContext(typeof(LibraryDbContext))]
-    [Migration("20230423120034_Init")]
+    [Migration("20230505171415_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -34,7 +34,8 @@ namespace Project.Migrations
 
                     b.Property<string>("City")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("PostalCode")
                         .IsRequired()
@@ -42,7 +43,8 @@ namespace Project.Migrations
 
                     b.Property<string>("Street")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
 

@@ -4,7 +4,11 @@ namespace Project.Entities
 {
     public class LibraryDbContext : DbContext
     {
-        private string _connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=master;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False";
+        public LibraryDbContext(DbContextOptions<LibraryDbContext> options) : base(options)
+        {
+        }
+
+        private string _connectionString = "Server=(localdb)\\MSSQLLocalDB;DataBase=LibraryDB;Trusted_Connection=True;";
 
         public DbSet<Library> Libraries { get; set; }
         public DbSet<Address> Address { get; set; }
