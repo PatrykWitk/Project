@@ -16,6 +16,16 @@ namespace LibrariesPr.Controllers
             _mapper = mapper;
         }
 
+        [HttpPost]
+        public IActionResult CreateLibrary([FromBody]CreateLibraryDto dto)
+        {
+            var library = _mapper.Map<Library>(dto);
+            _dbContext.Libraries.Add(library);
+            _dbContext.SaveChanges();
+
+            return Created($"/api/resturant/{library.Id}", null);
+        }
+
         [HttpGet]
         public ActionResult<IEnumerable<LibraryDto>> GetAll()
         {
