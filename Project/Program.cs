@@ -1,7 +1,12 @@
+using LibrariesPr.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using NLog;
+using NLog.Web;
 using Project.Entities;
 using System.Reflection;
+
+var logger = NLog.LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +18,10 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 builder.Services.AddDbContext<LibraryDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("LibraryConnection")));
+builder.Services.AddScoped<ILibraryService, LibraryService>();
+builder.Host.UseNLog();
+
+
 
 var app = builder.Build();
 // Configure the HTTP request pipeline.
@@ -21,9 +30,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
 app.UseHttpsRedirection();
-
 app.MapControllers();
-
 app.Run();

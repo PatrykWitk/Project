@@ -5,8 +5,11 @@ namespace LibrariesPr.Services
 {
     public interface ILibraryService
     {
-        void Create(CreateLibraryDto dto);
+        int Create(CreateLibraryDto dto);
         IEnumerable<LibraryDto> GetAll();
-        LibraryDto GetById(int id, IMapper mapper);
+        LibraryDto GetById(int id);
+
+        bool Delete(int id);
+        public bool Update(int id, UpdateLibraryDto dto);
     }
 }

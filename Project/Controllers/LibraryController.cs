@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using LibrariesPr.Models;
+using LibrariesPr.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Project.Entities;
@@ -9,33 +10,63 @@ namespace LibrariesPr.Controllers
     [Route("api/library")]
     public class LibraryController : ControllerBase
     {
-        private readonly LibraryDbContext _dbContext;
-        private readonly IMapper _mapper;
-        public LibraryController(LibraryDbContext dbContext, IMapper mapper) {
-            _dbContext = dbContext;
-            _mapper = mapper;
+        private readonly ILibraryService _libraryService;
+
+        public LibraryController(ILibraryService libraryService) {
+            _libraryService = libraryService;
+        }
+
+        [HttpPut("{id}")]
+        public IActionResult Update([FromBody]UpdateLibraryDto dto, [FromRoute]int id) { 
+            if(!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var isUpdated = _libraryService.Update(id, dto);
+
+            if (!isUpdated)
+            {
+                return NotFound();
+            }
+
+            return Ok();
+
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult Delete([FromRoute] int id)
+        { 
+            var isDeleted = _libraryService.Delete(id);
+
+            if(isDeleted)
+            {
+                return NoContent();
+            }
+            else
+            {
+                return NotFound();
+            }
         }
 
         [HttpPost]
         public IActionResult CreateLibrary([FromBody]CreateLibraryDto dto)
         {
-            var library = _mapper.Map<Library>(dto);
-            _dbContext.Libraries.Add(library);
-            _dbContext.SaveChanges();
+            if(!ModelState.IsValid) {
+                return BadRequest(ModelState);
+            }
 
-            return Created($"/api/resturant/{library.Id}", null);
+            var id = _libraryService.Create(dto);
+
+       
+
+            return Created($"/api/resturant/{id}", null);
         }
 
         [HttpGet]
         public ActionResult<IEnumerable<LibraryDto>> GetAll()
         {
-            var libraries = _dbContext
-                .Libraries
-                .Include(r => r.Address) 
-                .Include(r => r.Books)
-                .ToList();
-
-            var librariesDtos = _mapper.Map<List<LibraryDto>>(libraries);
+            var librariesDtos = _libraryService.GetAll();
 
             return Ok(librariesDtos);
         }
@@ -43,11 +74,13 @@ namespace LibrariesPr.Controllers
         [HttpGet("{id}")]
         public ActionResult<LibraryDto> Get(int id)
         {
-            var library = _dbContext
-                .Libraries
-                .FirstOrDefault(x => x.Id == id);
+            var libraryDto = _libraryService.GetById(id);
 
-            var libraryDto = _mapper.Map<LibraryDto>(library);
+            if(libraryDto == null)
+            {
+                return NotFound();
+            }
+
 
             return Ok(libraryDto);
         }
